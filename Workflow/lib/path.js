@@ -1,6 +1,24 @@
 #! /usr/bin/osascript -l JavaScript
 
 /**
+ * 解析指定路径的名称。
+ * @param {string} path 要解析名称的路径
+ */
+function basename(path) {
+  if (!path) {
+    return '';
+  }
+  let end = path.endsWith('/') ? path.length - 2 : path.length - 1;
+  let idx = path.lastIndexOf('/', end);
+  if (idx < 0) {
+    idx = 0;
+  } else {
+    idx++;
+  }
+  return path.slice(idx, end + 1);
+}
+
+/**
  * 对当前路径进行摘要，尽量确保结果的最大长度。
  *
  * @param {string} path 要摘要的路径。
@@ -60,9 +78,14 @@ function summaryPath(path, maxLength) {
   return `${prefix}${splitter}${suffix}`;
 }
 
-module.exports = { summaryPath };
+module.exports = { basename, summaryPath };
 
 /*
+
+console.log(basename('partA/PartB'))
+console.log(basename('/partA/PartB/'))
+console.log(basename('PartB'))
+console.log(basename('PartB/'))
 
 console.log(summaryPath('/PartA/PartB/PartC/PartD/', 0))
 console.log(summaryPath('/PartA/PartB/PartC/PartD/', 20))

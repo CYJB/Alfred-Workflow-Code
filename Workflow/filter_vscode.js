@@ -17,7 +17,7 @@ const { Result } = require('./lib/alfred');
 const { Cache } = require('./lib/cache');
 const { readFileSync } = require('./lib/file');
 const { finder } = require('./lib/finder');
-const { summaryPath } = require('./lib/path');
+const { basename, summaryPath } = require('./lib/path');
 
 ObjC.import("stdlib");
 const historyCount = Number.parseInt($.getenv("HISTORY_COUNT"));
@@ -38,7 +38,7 @@ function run(args) {
         }
         result.add({
           uid: key,
-          title: '在 Visual Studio Code 中打开文件' + suffix,
+          title: `在 Visual Studio Code 中打开文件${suffix} ${basename(key)}`,
           subtitle: summaryPath(key, 70),
           arg: key,
         });
@@ -62,7 +62,7 @@ function run(args) {
     }
     result.add({
       uid: 'finder',
-      title: '在 Visual Studio Code 中打开文件' + suffix,
+      title: `在 Visual Studio Code 中打开文件${suffix} ${basename(path)}`,
       subtitle: summaryPath(path, 70),
       arg: path,
     });

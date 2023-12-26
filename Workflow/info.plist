@@ -209,8 +209,10 @@
 		<key>VSC_PATH</key>
 		<string>/Applications/Visual Studio Code.app</string>
 	</dict>
+	<key>variablesdontexport</key>
+	<array/>
 	<key>version</key>
-	<string>1.0.1</string>
+	<string>1.0.2</string>
 	<key>webaddress</key>
 	<string>https://github.com/CYJB/Alfred-Workflow-Code</string>
 </dict>
