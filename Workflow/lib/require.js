@@ -1,4 +1,6 @@
-(function (app) {
+(function () {
+  ObjC.import('Foundation');
+
   /** 被引用的模块 */
   const requiredModules = new Map();
   /**
@@ -18,9 +20,7 @@
     module = { exports: {} };
     requiredModules.set(moduleName, module);
     const path = `./lib/${moduleName}.js`;
-    const handle = app.openForAccess(path);
-    const content = app.read(handle);
-    app.closeAccess(path);
+    const content = ObjC.unwrap($.NSString.stringWithContentsOfFileEncodingError(path, $.NSUTF8StringEncoding, undefined));
     (function (__moduleName__, __content__, require, module, exports) {
       try {
         eval(__content__);

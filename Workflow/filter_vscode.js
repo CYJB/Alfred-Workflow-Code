@@ -8,30 +8,32 @@ let require;
 {
   const requirePath = './lib/require.js';
   const handle = app.openForAccess(requirePath);
-  const content = app.read(handle);
+  require = eval(app.read(handle))();
   app.closeAccess(requirePath);
-  require = eval(content)(app);
 }
 
 const { Result } = require('./lib/alfred');
 const { Cache } = require('./lib/cache');
-const { readFileSync } = require('./lib/file');
 const { finder } = require('./lib/finder');
 const { basename, summaryPath } = require('./lib/path');
 
-ObjC.import("stdlib");
-const historyCount = Number.parseInt($.getenv("HISTORY_COUNT"));
-
 function run(args) {
   const result = new Result();
+  ObjC.import("stdlib");
+  const historyCount = Number.parseInt($.getenv("HISTORY_COUNT"));
   if (args.length > 0 && historyCount > 0) {
     // 带有查询，从历史记录中查找。
+    const queries = [];
     for (let i = 0; i < args.length; i++) {
-      args[i] = args[i].toLowerCase();
+      let arg = args[i].trim().toLowerCase();
+      if (arg.indexOf(' ') >= 0) {
+        arg.split(' ').forEach(q => q && queries.push(q))
+      } else {
+        queries.push(arg);
+      }
     }
-    const historyPath = './history.json';
-    new Cache(readFileSync(historyPath)).forEach((key) => {
-      if (matchQuery(key, args)) {
+    new Cache('./history.json').forEach((key) => {
+      if (matchQuery(key, queries)) {
         let suffix = '';
         if (key.endsWith('/')) {
           suffix = '夹';
@@ -77,10 +79,13 @@ function run(args) {
  */
 function matchQuery(text, queries) {
   text = text.toLowerCase();
+  let start = 0;
   for (let i = 0; i < queries.length; i++) {
-    if (text.indexOf(queries[i]) < 0) {
+    const idx = text.indexOf(queries[i], start);
+    if (idx < 0) {
       return false;
     }
+    start = idx + queries[i].length;
   }
   return true;
 }

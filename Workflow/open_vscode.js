@@ -14,7 +14,6 @@ let require;
 }
 
 const { Cache } = require('./lib/cache');
-const { readFileSync, writeFileSync } = require('./lib/file');
 
 function run(argv) {
   const path = argv[0];
@@ -26,10 +25,9 @@ function run(argv) {
   const historyCount = Number.parseInt($.getenv("HISTORY_COUNT"));
   if (historyCount > 0) {
     // 在打开文件时记录历史记录。
-    const historyPath = './history.json';
-    const history = new Cache(readFileSync(historyPath));
+    const history = new Cache('./history.json');
     history.add(path, {});
-    writeFileSync(historyPath, history.save(historyCount));
+    history.save(historyCount);
   }
 
   if (path.endsWith('/')) {
