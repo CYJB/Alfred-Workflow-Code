@@ -22,8 +22,15 @@
     const path = `./lib/${moduleName}.js`;
     const content = ObjC.unwrap($.NSString.stringWithContentsOfFileEncodingError(path, $.NSUTF8StringEncoding, undefined));
     (function (__moduleName__, __content__, require, module, exports) {
+      // 替换 content 内的 #! 指令。
+      if (__content__.startsWith('#!')) {
+        __content__ = '// ' + __content__;
+      }
       try {
-        eval(__content__);
+        const oldModule = globalThis.module;
+        globalThis.module = module;
+        new Function(__content__)();
+        globalThis.module = oldModule;
       } catch (e) {
         console.log('load module', __moduleName__, 'failed:', e)
       }
