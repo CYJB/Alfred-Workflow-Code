@@ -73,6 +73,8 @@ class Cache {
 
   /**
    * 添加指定键的缓存。
+   * @param {string} key 缓存的键。
+   * @param {any} value 缓存的值。
    */
   add(key, value) {
     let node = this._cacheDict.get(key);
@@ -88,6 +90,20 @@ class Cache {
       this._cacheDict.set(key, node);
     }
     this._nodes.unshift(node);
+  }
+
+  /**
+   * 移除指定键的缓存。
+   * @param {string} key 缓存的键。
+   */
+  remove(key) {
+    let node = this._cacheDict.get(key);
+    if (node) {
+      const idx = this._nodes.indexOf(node);
+      if (idx >= 0) {
+        this._nodes.splice(idx, 1);
+      }
+    }
   }
 
   /**

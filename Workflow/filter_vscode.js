@@ -14,6 +14,7 @@ let require;
 
 const { Result } = require('./lib/alfred');
 const { Cache } = require('./lib/cache');
+const { fileExistsSync, moveFileSync } = require('./lib/file');
 const { finder } = require('./lib/finder');
 const { basename, summaryPath } = require('./lib/path');
 
@@ -32,17 +33,29 @@ function run(args) {
         queries.push(arg);
       }
     }
-    new Cache('./history.json').forEach((key) => {
+    const historyPath = $.getenv("alfred_workflow_data") + '/history.json';
+    if (!fileExistsSync(historyPath) && fileExistsSync('./history.json')) {
+      // 从旧路径迁移到新路径。
+      moveFileSync('./history.json', historyPath);
+    }
+    new Cache(historyPath).forEach((key) => {
       if (matchQuery(key, queries)) {
         let suffix = '';
         if (key.endsWith('/')) {
           suffix = '夹';
         }
+        const subtitle = summaryPath(key, 70);
         result.add({
           uid: key,
           title: `在 Visual Studio Code 中打开文件${suffix} ${basename(key)}`,
-          subtitle: summaryPath(key, 70),
+          subtitle,
           arg: key,
+          mods: {
+            alt: {
+              valid: true,
+              subtitle: `移除历史记录 ${subtitle}`,
+            }
+          }
         });
       }
     });
